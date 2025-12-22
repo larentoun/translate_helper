@@ -10,18 +10,18 @@ interface AddModalProps {
 
 function AddModal({ onSave, onClose }: AddModalProps) {
 	const [key, setKey] = useState<string>("");
-	// <<< Заполняем текст сразу примером >>>
 	const [tomlText, setTomlText] = useState<string>(`nominative = ""
 genitive = ""
 dative = ""
 accusative = ""
 instrumental = ""
 prepositional = ""
-gender = "male"`); // <<< По умолчанию gender = "male"
+gender = "male"`);
 	const [error, setError] = useState<string | null>(null);
 
 	const handleChangeKey = (e: ChangeEvent<HTMLInputElement>) => {
-		setKey(e.target.value);
+		const value = e.target.value;
+		setKey(value);
 		setError(null);
 	};
 
@@ -35,6 +35,14 @@ gender = "male"`); // <<< По умолчанию gender = "male"
 
 		if (!key.trim()) {
 			setError("Ключ не может быть пустым");
+			return;
+		}
+
+		// <<< Проверка: ключ должен быть в нижнем регистре, латиница, цифры, подчёркивания >>>
+		if (!/^[a-z0-9_]+$/.test(key)) {
+			setError(
+				"Ключ должен состоять только из латинских букв в нижнем регистре, цифр и подчёркиваний"
+			);
 			return;
 		}
 
