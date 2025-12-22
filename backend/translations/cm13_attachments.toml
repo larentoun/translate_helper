@@ -1039,7 +1039,7 @@ gender = "male"
 ["m707 anti-materiel rifle ammo crate"]
 nominative = "ящик для магазинов (M707 x 1)"
 
-["m707 \\\"vulture\\\" magazine (20x102mm)"]
+["m707 \"vulture\" magazine (20x102mm)"]
 nominative = "магазин для M707 «Стервятник» (20x102мм)"
 genitive = "магазина для M707 «Стервятник» (20x102мм)"
 dative = "магазину для M707 «Стервятник» (20x102мм)"
@@ -1051,7 +1051,7 @@ gender = "male"
 ["m707 anti-materiel rifle holo target ammo crate"]
 nominative = "ящик для магазинов (M707 Holo-Target x 1)"
 
-["m707 \\\"vulture\\\" holo-target magazine (20x102mm)"]
+["m707 \"vulture\" holo-target magazine (20x102mm)"]
 nominative = "магазин для M707 «Стервятник» (20x102мм Holo-Target)"
 genitive = "магазина для M707 «Стервятник» (20x102мм Holo-Target)"
 dative = "магазину для M707 «Стервятник» (20x102мм Holo-Target)"

@@ -1,4 +1,5 @@
 import toml
+import tomli
 from pathlib import Path
 import os
 
@@ -17,10 +18,12 @@ def scan_all_translations(translations_dir: str):
     all_entries_raw = []
 
     for file_path in Path(translations_dir).glob("*.toml"):
-        source = file_path.stem  # имя файла без .toml
+        source = file_path.stem
         print(f"[DEBUG] Loading file: {file_path}")
         try:
-            data = toml.load(file_path)
+            with open(file_path, "r", encoding="utf-8") as f:
+                content = f.read()
+            data = tomli.loads(content)
         except Exception as e:
             print(f"[ERROR] Could not parse TOML {file_path}: {e}")
             continue
@@ -66,7 +69,8 @@ def parse_toml_file(content: str):
     Парсит содержимое TOML-файла и возвращает словарь {key: {field: value}}
     """
     try:
-        data = toml.loads(content)
+        data = tomli.loads(content)
+        print(f"[DEBUG] Parsed data keys: {list(data.keys())}")  # <<< Отладка
         return data
     except Exception as e:
         print(f"[ERROR] Could not parse TOML content: {e}")
@@ -107,7 +111,7 @@ def check_and_fix_lowercase_keys(translations_dir: str, fix: bool = False):
         try:
             with open(file_path, "r", encoding="utf-8") as f:
                 original_content = f.read()
-            data = toml.loads(original_content)
+            data = tomli.loads(original_content)
 
             updated_data = {}
             has_changes = False

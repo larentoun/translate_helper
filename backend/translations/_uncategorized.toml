@@ -9779,7 +9779,7 @@ instrumental = "броней экзокостюма \"Джастис\""
 prepositional = "броне экзокостюма \"Джастис\""
 gender = "female"
 
-["lbx ac 10 \\\"scattershot\\\""]
+["lbx ac 10 \"scattershot\""]
 nominative = "дробовик LBX AC 10 \"Залп\""
 genitive = "дробовика LBX AC 10 \"Залп\""
 dative = "дробовику LBX AC 10 \"Залп\""
@@ -9797,7 +9797,7 @@ instrumental = "патронами для LBX AC 10"
 prepositional = "патронах для LBX AC 10"
 gender = "plural"
 
-["fnx-99 \\\"hades\\\" carbine"]
+["fnx-99 \"hades\" carbine"]
 nominative = "карабин FNX-99 \"Аид\""
 genitive = "карабина FNX-99 \"Аид\""
 dative = "карабину FNX-99 \"Аид\""
@@ -9833,7 +9833,7 @@ instrumental = "тесла-пушкой MK1"
 prepositional = "тесла-пушке MK1"
 gender = "female"
 
-["ch-ps \\\"immolator\\\" laser"]
+["ch-ps \"immolator\" laser"]
 nominative = "лазер CH-PS \"Испепелитель\""
 genitive = "лазера CH-PS \"Испепелитель\""
 dative = "лазеру CH-PS \"Испепелитель\""
@@ -9842,7 +9842,7 @@ instrumental = "лазером CH-PS \"Испепелитель\""
 prepositional = "лазере CH-PS \"Испепелитель\""
 gender = "male"
 
-["ch-lc \\\"solaris\\\" laser cannon"]
+["ch-lc \"solaris\" laser cannon"]
 nominative = "лазерная пушка \"Солярис\""
 genitive = "лазерной пушки \"Солярис\""
 dative = "лазерной пушке \"Солярис\""
@@ -9851,7 +9851,7 @@ instrumental = "лазерной пушкой \"Солярис\""
 prepositional = "лазерной пушке \"Солярис\""
 gender = "female"
 
-["ch-ds \\\"peacemaker\\\" disabler"]
+["ch-ds \"peacemaker\" disabler"]
 nominative = "дизейблер CH-DS \"Миротворец\""
 genitive = "дизейблера CH-DS \"Миротворец\""
 dative = "дизейблеру CH-DS \"Миротворец\""
@@ -16898,7 +16898,7 @@ instrumental = "крякающей обувью"
 prepositional = "крякающей обуви"
 gender = "female"
 
-["old copy of \\\"space station 13: the musical\\\""]
+["old copy of \"space station 13: the musical\""]
 nominative = "старая копия \"Космическая станция 13: Мюзикл\""
 genitive = "старой копии \"Космическая станция 13: Мюзикл\""
 dative = "старой копии \"Космическая станция 13: Мюзикл\""
