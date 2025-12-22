@@ -40,7 +40,6 @@ def update_entry(entry_key: str, entry: Entry):
     save_translation_entry(file_path, entry_key, entry.dict())
     return {"status": "success"}
 
-# <<< Новый маршрут для загрузки файла >>>
 @app.post("/upload")
 def upload_file(file: UploadFile = File(...)):
     if not file.filename.endswith(".toml"):
@@ -51,6 +50,9 @@ def upload_file(file: UploadFile = File(...)):
 
     # Парсим TOML
     imported_data = parse_toml_file(content)
+
+    # <<< Приводим все ключи к lowercase >>>
+    imported_data = {k.lower(): v for k, v in imported_data.items()}
 
     # Получаем существующие ключи
     all_entries = scan_all_translations(TRANSLATIONS_DIR)
