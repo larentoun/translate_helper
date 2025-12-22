@@ -96,3 +96,43 @@ def save_translation_entry(filepath: str, entry_key: str, new_data: dict):
     # <<< Перезаписываем файл целиком >>>
     with open(filepath, "w", encoding="utf-8") as f:
         toml.dump(data, f)
+
+def check_and_fix_lowercase_keys(translations_dir: str, fix: bool = False):
+    """
+    Проверяет и (опционально) исправляет ключи, которые не в нижнем регистре.
+    Возвращает список проблем: [{"file": "file.toml", "key": "BadKey", "fixed_key": "badkey"}]
+    """
+    issues = []
+    for file_path in Path(translations_dir).glob("*.toml"):
+        try:
+            with open(file_path, "r", encoding="utf-8") as f:
+                original_content = f.read()
+            data = toml.loads(original_content)
+
+            updated_data = {}
+            has_changes = False
+
+            for key, value in data.items():
+                if key != key.lower():
+                    new_key = key.lower()
+                    issues.append({
+                        "file": file_path.name,
+                        "key": key,
+                        "fixed_key": new_key
+                    })
+                    if fix:
+                        updated_data[new_key] = value
+                        has_changes = True
+                    else:
+                        updated_data[key] = value
+                else:
+                    updated_data[key] = value
+
+            if fix and has_changes:
+                with open(file_path, "w", encoding="utf-8") as f:
+                    toml.dump(updated_data, f)
+
+        except Exception as e:
+            print(f"[ERROR] Could not process file {file_path}: {e}")
+
+    return issues

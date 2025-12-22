@@ -4,7 +4,7 @@ from pydantic import BaseModel
 from typing import List
 import os
 import tempfile
-from utils import scan_all_translations, save_translation_entry, parse_toml_file
+from utils import scan_all_translations, save_translation_entry, parse_toml_file, check_and_fix_lowercase_keys
 
 app = FastAPI()
 
@@ -102,4 +102,20 @@ def upload_file(file: UploadFile = File(...)):
         "imported_count": len(imported_entries),
         "warning_count": len(warning_entries),
         "message": "Import completed"
+    }
+
+@app.post("/check-keys-lowercase")
+def check_keys_lowercase():
+    issues = check_and_fix_lowercase_keys(TRANSLATIONS_DIR, fix=False)
+    return {
+        "message": f"Found {len(issues)} keys that are not lowercase",
+        "issues": issues
+    }
+
+@app.post("/fix-keys-lowercase")
+def fix_keys_lowercase():
+    issues = check_and_fix_lowercase_keys(TRANSLATIONS_DIR, fix=True)
+    return {
+        "message": f"Fixed {len(issues)} keys to lowercase",
+        "fixed": issues
     }

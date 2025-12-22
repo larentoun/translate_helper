@@ -3,6 +3,7 @@ import axios from "axios";
 import EditModal from "./EditModal";
 import AddModal from "./AddModal";
 import ImportModal from "./ImportModal";
+import LowercaseModal from "./LowercaseModal"; // <<< Новый компонент
 import { TranslationEntry } from "./types";
 
 function App() {
@@ -13,6 +14,8 @@ function App() {
 	);
 	const [showAddModal, setShowAddModal] = useState<boolean>(false);
 	const [showImportModal, setShowImportModal] = useState<boolean>(false);
+	const [showLowercaseModal, setShowLowercaseModal] =
+		useState<boolean>(false); // <<< Новое состояние
 
 	const fetchEntries = async () => {
 		try {
@@ -67,10 +70,9 @@ function App() {
 					headers: {
 						"Content-Type": "multipart/form-data",
 					},
-					signal, // <<< Передаём сигнал отмены
+					signal,
 				}
 			);
-			// fetchEntries(); // Обновляем список после импорта
 			return res.data;
 		} catch (err) {
 			if (axios.isCancel(err)) {
@@ -105,6 +107,10 @@ function App() {
 			<button onClick={() => setShowImportModal(true)}>
 				Импорт из файла
 			</button>
+			<button onClick={() => setShowLowercaseModal(true)}>
+				Проверить lowercase ключи
+			</button>{" "}
+			{/* <<< Новая кнопка */}
 			<table>
 				<thead>
 					<tr>
@@ -137,7 +143,6 @@ function App() {
 					))}
 				</tbody>
 			</table>
-
 			{editingEntry && (
 				<EditModal
 					entry={editingEntry}
@@ -145,7 +150,6 @@ function App() {
 					onClose={() => setEditingEntry(null)}
 				/>
 			)}
-
 			{showAddModal && (
 				<AddModal
 					onSave={handleAdd}
@@ -153,13 +157,20 @@ function App() {
 					existingKeys={existingKeys}
 				/>
 			)}
-
 			{showImportModal && (
 				<ImportModal
 					onImport={handleImport}
 					onClose={() => {
 						setShowImportModal(false);
-						fetchEntries(); // <<< Обновляем список при закрытии
+						fetchEntries();
+					}}
+				/>
+			)}
+			{showLowercaseModal && (
+				<LowercaseModal
+					onClose={() => {
+						setShowLowercaseModal(false);
+						fetchEntries(); // <<< Обновим список после проверки
 					}}
 				/>
 			)}
