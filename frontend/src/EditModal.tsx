@@ -1,6 +1,8 @@
 import React, { useState, ChangeEvent } from "react";
 import { TranslationEntry } from "./types";
 
+const VALID_GENDERS = ["male", "female", "neuter", "plural"] as const;
+
 interface EditModalProps {
 	entry: TranslationEntry;
 	onSave: (updatedEntry: TranslationEntry) => Promise<void>;
@@ -8,19 +10,77 @@ interface EditModalProps {
 }
 
 function EditModal({ entry, onSave, onClose }: EditModalProps) {
-	const [data, setData] = useState<Omit<TranslationEntry, "status">>({
-		...entry,
-	});
+	// Объединяем все поля в один TOML-блок
+	const initialTomlValue = `[${entry.key}]
+nominative = "${entry.nominative}"
+genitive = "${entry.genitive}"
+dative = "${entry.dative}"
+accusative = "${entry.accusative}"
+instrumental = "${entry.instrumental}"
+prepositional = "${entry.prepositional}"
+gender = "${entry.gender}"`;
 
-	const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-		const { name, value } = e.target;
-		setData((prev) => ({ ...prev, [name]: value }));
+	const [tomlText, setTomlText] = useState<string>(initialTomlValue);
+	const [error, setError] = useState<string | null>(null);
+
+	const handleChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
+		setTomlText(e.target.value);
+		setError(null); // Сброс ошибки при изменении
 	};
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
-		// Восстанавливаем `status` перед сохранением
-		await onSave(data as TranslationEntry);
+
+		// <<< Разбор TOML-блока >>>
+		const lines = tomlText
+			.split("\n")
+			.map((line) => line.trim())
+			.filter(Boolean);
+
+		let newEntry: Partial<TranslationEntry> = { ...entry };
+
+		for (const line of lines) {
+			if (line.startsWith("[") && line.endsWith("]")) continue; // Пропускаем [key]
+
+			const [key, value] = line.split("=").map((s) => s.trim());
+			if (!key || !value) continue;
+
+			const fieldName = key as keyof TranslationEntry;
+			if (
+				[
+					"nominative",
+					"genitive",
+					"dative",
+					"accusative",
+					"instrumental",
+					"prepositional",
+					"gender",
+				].includes(fieldName)
+			) {
+				// Убираем кавычки
+				const fieldValue = value.replace(/"/g, "");
+				if (
+					fieldName === "gender" &&
+					!VALID_GENDERS.includes(fieldValue as any)
+				) {
+					setError(
+						`Поле gender должно быть одним из: ${VALID_GENDERS.join(
+							", "
+						)}`
+					);
+					return; // Не отправляем
+				}
+				newEntry[fieldName] = fieldValue as any;
+			}
+		}
+
+		// Восстанавливаем недостающие поля
+		newEntry = {
+			...entry,
+			...newEntry,
+		};
+
+		await onSave(newEntry as TranslationEntry);
 		onClose();
 	};
 
@@ -46,58 +106,19 @@ function EditModal({ entry, onSave, onClose }: EditModalProps) {
 				}}
 			>
 				<h3>
-					Редактировать перевод: {data.key} (источник: {data.source})
+					Редактировать перевод: {entry.key} (источник: {entry.source}
+					)
 				</h3>
-				<label>nominative:</label>
-				<input
-					name="nominative"
-					value={data.nominative}
+				<label>Введите TOML-блок:</label>
+				<textarea
+					rows={10}
+					cols={60}
+					value={tomlText}
 					onChange={handleChange}
-					required
+					style={{ fontFamily: "monospace", fontSize: "12px" }}
 				/>
-
-				<label>genitive:</label>
-				<input
-					name="genitive"
-					value={data.genitive}
-					onChange={handleChange}
-				/>
-
-				<label>dative:</label>
-				<input
-					name="dative"
-					value={data.dative}
-					onChange={handleChange}
-				/>
-
-				<label>accusative:</label>
-				<input
-					name="accusative"
-					value={data.accusative}
-					onChange={handleChange}
-				/>
-
-				<label>instrumental:</label>
-				<input
-					name="instrumental"
-					value={data.instrumental}
-					onChange={handleChange}
-				/>
-
-				<label>prepositional:</label>
-				<input
-					name="prepositional"
-					value={data.prepositional}
-					onChange={handleChange}
-				/>
-
-				<label>gender:</label>
-				<input
-					name="gender"
-					value={data.gender}
-					onChange={handleChange}
-				/>
-
+				{error && <p style={{ color: "red" }}>{error}</p>}
+				<br />
 				<button type="submit">Сохранить</button>
 				<button type="button" onClick={onClose}>
 					Отмена
