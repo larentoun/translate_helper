@@ -1,5 +1,6 @@
 import toml
 from pathlib import Path
+import os
 
 REQUIRED_FIELDS = [
     "genitive",
@@ -12,11 +13,11 @@ REQUIRED_FIELDS = [
 
 def scan_all_translations(translations_dir: str):
     entries = []
-    key_language_map = {}  # ключ -> список языков
+    key_source_map = {}  # ключ -> список источников (файлов)
     all_entries_raw = []
 
     for file_path in Path(translations_dir).glob("*.toml"):
-        lang = file_path.stem
+        source = file_path.stem  # имя файла без .toml
         print(f"[DEBUG] Loading file: {file_path}")
         try:
             data = toml.load(file_path)
@@ -27,7 +28,7 @@ def scan_all_translations(translations_dir: str):
         for key, value in data.items():
             entry = {
                 "key": key,
-                "language": lang,
+                "source": source,
                 "nominative": value.get("nominative", ""),
                 "genitive": value.get("genitive", ""),
                 "dative": value.get("dative", ""),
@@ -40,14 +41,14 @@ def scan_all_translations(translations_dir: str):
             entry["status"] = all(entry.get(f) for f in REQUIRED_FIELDS)
             all_entries_raw.append(entry)
 
-            # Собираем, в каких языках встречается каждый ключ
-            if key not in key_language_map:
-                key_language_map[key] = []
-            key_language_map[key].append(lang)
+            # Собираем, в каких источниках встречается каждый ключ
+            if key not in key_source_map:
+                key_source_map[key] = []
+            key_source_map[key].append(source)
 
-    # Теперь проставляем статус "конфликт", если ключ встречается более чем в одном языке
+    # Теперь проставляем статус "конфликт", если ключ встречается более чем в одном источнике
     for entry in all_entries_raw:
-        if len(key_language_map[entry["key"]]) > 1:
+        if len(key_source_map[entry["key"]]) > 1:
             entry["status"] = "конфликт"
         elif entry["status"]:
             entry["status"] = True  # ✅
@@ -64,12 +65,18 @@ def save_translation_entry(filepath: str, entry_key: str, new_data: dict):
     # Убедимся, что файл существует
     if not os.path.exists(filepath):
         with open(filepath, "w", encoding="utf-8") as f:
-            pass  # Создаём пустой файл
+            pass  # Создаём пустый файл
 
     with open(filepath, "r", encoding="utf-8") as f:
         data = toml.load(f)
 
-    data[entry_key] = {k: v for k, v in new_data.items() if k not in ("key", "language")}
+    # Обновляем только те поля, которые есть в new_data (кроме key и source)
+    if entry_key not in data:
+        data[entry_key] = {}
+
+    for field in ["nominative", "genitive", "dative", "accusative", "instrumental", "prepositional", "gender"]:
+        if field in new_data:
+            data[entry_key][field] = new_data[field]
 
     with open(filepath, "w", encoding="utf-8") as f:
         toml.dump(data, f)

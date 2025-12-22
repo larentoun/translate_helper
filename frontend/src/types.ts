@@ -1,6 +1,6 @@
 export interface TranslationEntry {
 	key: string;
-	language: string;
+	source: string;
 	nominative: string;
 	genitive: string;
 	dative: string;

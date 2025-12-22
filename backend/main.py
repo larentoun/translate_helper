@@ -19,7 +19,7 @@ TRANSLATIONS_DIR = "./translations"
 
 class Entry(BaseModel):
     key: str
-    language: str  # <<< Добавим поле языка
+    source: str
     nominative: str
     genitive: str
     dative: str
@@ -35,7 +35,6 @@ def get_entries():
 
 @app.put("/entries/{entry_key}")
 def update_entry(entry_key: str, entry: Entry):
-    # entry.language указывает, в какой файл сохранять
-    file_path = os.path.join(TRANSLATIONS_DIR, f"{entry.language}.toml")
+    file_path = os.path.join(TRANSLATIONS_DIR, f"{entry.source}.toml")
     save_translation_entry(file_path, entry_key, entry.dict())
     return {"status": "success"}

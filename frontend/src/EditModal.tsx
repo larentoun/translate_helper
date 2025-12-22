@@ -1,5 +1,5 @@
 import React, { useState, ChangeEvent } from "react";
-import { TranslationEntry } from "./types"; // Импорт интерфейса
+import { TranslationEntry } from "./types";
 
 interface EditModalProps {
 	entry: TranslationEntry;
@@ -8,10 +8,9 @@ interface EditModalProps {
 }
 
 function EditModal({ entry, onSave, onClose }: EditModalProps) {
-	// Убираем `status` из состояния, т.к. оно вычисляется на бэкенде
 	const [data, setData] = useState<Omit<TranslationEntry, "status">>({
 		...entry,
-	}); // Omit status
+	});
 
 	const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
 		const { name, value } = e.target;
@@ -20,8 +19,8 @@ function EditModal({ entry, onSave, onClose }: EditModalProps) {
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
-		// Восстанавливаем `status` перед сохранением, т.к. бэкенд его сам посчитает
-		await onSave(data as TranslationEntry); // Мы знаем, что `status` не нужно отправлять
+		// Восстанавливаем `status` перед сохранением
+		await onSave(data as TranslationEntry);
 		onClose();
 	};
 
@@ -46,7 +45,9 @@ function EditModal({ entry, onSave, onClose }: EditModalProps) {
 					padding: "20px",
 				}}
 			>
-				<h3>Редактировать перевод: {data.key}</h3>
+				<h3>
+					Редактировать перевод: {data.key} (источник: {data.source})
+				</h3>
 				<label>nominative:</label>
 				<input
 					name="nominative"
