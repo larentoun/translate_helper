@@ -61,14 +61,29 @@ def scan_all_translations(translations_dir: str):
     return entries
 
 
+def parse_toml_file(content: str):
+    """
+    Парсит содержимое TOML-файла и возвращает словарь {key: {field: value}}
+    """
+    try:
+        data = toml.loads(content)
+        return data
+    except Exception as e:
+        print(f"[ERROR] Could not parse TOML content: {e}")
+        return {}
+
+
 def save_translation_entry(filepath: str, entry_key: str, new_data: dict):
     # Убедимся, что файл существует
     if not os.path.exists(filepath):
         with open(filepath, "w", encoding="utf-8") as f:
-            pass  # Создаём пустый файл
+            pass  # Создаём пустой файл
 
     with open(filepath, "r", encoding="utf-8") as f:
-        data = toml.load(f)
+        try:
+            data = toml.load(f)
+        except:
+            data = {}  # Если файл пуст или сломан
 
     # Обновляем только те поля, которые есть в new_data (кроме key и source)
     if entry_key not in data:
@@ -78,5 +93,6 @@ def save_translation_entry(filepath: str, entry_key: str, new_data: dict):
         if field in new_data:
             data[entry_key][field] = new_data[field]
 
+    # <<< Перезаписываем файл целиком >>>
     with open(filepath, "w", encoding="utf-8") as f:
         toml.dump(data, f)

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import EditModal from "./EditModal";
 import AddModal from "./AddModal";
+import ImportModal from "./ImportModal";
 import { TranslationEntry } from "./types";
 
 function App() {
@@ -11,6 +12,7 @@ function App() {
 		null
 	);
 	const [showAddModal, setShowAddModal] = useState<boolean>(false);
+	const [showImportModal, setShowImportModal] = useState<boolean>(false);
 
 	const fetchEntries = async () => {
 		try {
@@ -34,7 +36,7 @@ function App() {
 				updatedEntry
 			);
 			setEditingEntry(null);
-			fetchEntries(); // Обновляем список
+			fetchEntries();
 		} catch (err) {
 			console.error(err);
 		}
@@ -47,13 +49,39 @@ function App() {
 				newEntry
 			);
 			setShowAddModal(false);
-			fetchEntries(); // Обновляем список
+			fetchEntries();
 		} catch (err) {
 			console.error(err);
 		}
 	};
 
-	// <<< Создаём Set из всех существующих ключей >>>
+	const handleImport = async (file: File, signal: AbortSignal) => {
+		const formData = new FormData();
+		formData.append("file", file);
+
+		try {
+			const res = await axios.post(
+				"http://localhost:8000/upload",
+				formData,
+				{
+					headers: {
+						"Content-Type": "multipart/form-data",
+					},
+					signal, // <<< Передаём сигнал отмены
+				}
+			);
+			// fetchEntries(); // Обновляем список после импорта
+			return res.data;
+		} catch (err) {
+			if (axios.isCancel(err)) {
+				console.log("Запрос отменён");
+			} else {
+				console.error(err);
+			}
+			throw err;
+		}
+	};
+
 	const existingKeys = new Set(entries.map((e) => e.key));
 
 	const filteredEntries = entries.filter(
@@ -73,6 +101,9 @@ function App() {
 			/>
 			<button onClick={() => setShowAddModal(true)}>
 				Добавить перевод
+			</button>
+			<button onClick={() => setShowImportModal(true)}>
+				Импорт из файла
 			</button>
 			<table>
 				<thead>
@@ -119,7 +150,17 @@ function App() {
 				<AddModal
 					onSave={handleAdd}
 					onClose={() => setShowAddModal(false)}
-					existingKeys={existingKeys} // <<< Передаём список ключей
+					existingKeys={existingKeys}
+				/>
+			)}
+
+			{showImportModal && (
+				<ImportModal
+					onImport={handleImport}
+					onClose={() => {
+						setShowImportModal(false);
+						fetchEntries(); // <<< Обновляем список при закрытии
+					}}
 				/>
 			)}
 		</div>

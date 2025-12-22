@@ -1,9 +1,10 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List
 import os
-from utils import scan_all_translations, save_translation_entry
+import tempfile
+from utils import scan_all_translations, save_translation_entry, parse_toml_file
 
 app = FastAPI()
 
@@ -38,3 +39,67 @@ def update_entry(entry_key: str, entry: Entry):
     file_path = os.path.join(TRANSLATIONS_DIR, f"{entry.source}.toml")
     save_translation_entry(file_path, entry_key, entry.dict())
     return {"status": "success"}
+
+# <<< Новый маршрут для загрузки файла >>>
+@app.post("/upload")
+def upload_file(file: UploadFile = File(...)):
+    if not file.filename.endswith(".toml"):
+        raise HTTPException(status_code=400, detail="File must be a .toml")
+
+    # Читаем содержимое файла
+    content = file.file.read().decode("utf-8")
+
+    # Парсим TOML
+    imported_data = parse_toml_file(content)
+
+    # Получаем существующие ключи
+    all_entries = scan_all_translations(TRANSLATIONS_DIR)
+    existing_keys = {e["key"] for e in all_entries}
+
+    conflicts = []
+    imported_entries = []
+    warning_entries = []
+
+    for key, data in imported_data.items():
+        if key in existing_keys:
+            conflicts.append(key)
+            continue
+
+        entry = {
+            "key": key,
+            "nominative": data.get("nominative", ""),
+            "genitive": data.get("genitive", ""),
+            "dative": data.get("dative", ""),
+            "accusative": data.get("accusative", ""),
+            "instrumental": data.get("instrumental", ""),
+            "prepositional": data.get("prepositional", ""),
+            "gender": data.get("gender", ""),
+        }
+
+        # Проверяем обязательные поля
+        required_fields = ["nominative", "genitive", "dative", "accusative", "instrumental", "prepositional", "gender"]
+        has_all_fields = all(entry.get(f) for f in required_fields)
+
+        if has_all_fields:
+            imported_entries.append(entry)
+            # Сохраняем в _imported.toml
+            save_translation_entry(
+                os.path.join(TRANSLATIONS_DIR, "_imported.toml"),
+                key,
+                {**entry, "source": "_imported"}
+            )
+        else:
+            warning_entries.append(entry)
+            # Сохраняем в _imported_warning.toml
+            save_translation_entry(
+                os.path.join(TRANSLATIONS_DIR, "_imported_warning.toml"),
+                key,
+                {**entry, "source": "_imported_warning"}
+            )
+
+    return {
+        "conflicts": conflicts,
+        "imported_count": len(imported_entries),
+        "warning_count": len(warning_entries),
+        "message": "Import completed"
+    }
