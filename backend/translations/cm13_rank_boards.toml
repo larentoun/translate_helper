@@ -1,0 +1,191 @@
+["rank pins"]
+nominative = "погоны"
+genitive = "погон"
+dative = "погонам"
+accusative = "погоны"
+instrumental = "погонами"
+prepositional = "погонах"
+gender = "plural"
+
+["rank boards"]
+nominative = "погоны"
+genitive = "погон"
+dative = "погонам"
+accusative = "погоны"
+instrumental = "погонами"
+prepositional = "погонах"
+gender = "plural"
+
+[me1]
+nominative = "Ряд."
+
+[me2]
+nominative = "Ряд. 1 класса"
+
+[me3]
+nominative = "Мл.к-л"
+
+[me4]
+nominative = "К-л"
+
+[me5]
+nominative = "С-т"
+
+[me6]
+nominative = "Ш/с-т"
+
+[me7]
+nominative = "К/с-т"
+
+[me8]
+nominative = "М/с-т"
+
+[me8e]
+nominative = "П/с-т"
+
+[me9]
+nominative = "Ст.К/с-т"
+
+[me9e]
+nominative = "С-м"
+
+[me9c]
+nominative = "С-м КМ"
+
+[mo1]
+nominative = "В/Л-т"
+
+[mo2]
+nominative = "П/л-т"
+
+[mo3]
+nominative = "К-н"
+
+[mo4]
+nominative = "М-р"
+
+[mo5]
+nominative = "Л-т/п-к"
+
+[mo6]
+nominative = "П-к"
+
+[mo6e]
+nominative = "Ст.п-к"
+
+[mo6c]
+nominative = "Див.п-к"
+
+[mo7]
+nominative = "Бриг.ген."
+
+[mo8]
+nominative = "Ген.м-р"
+
+[mo9]
+nominative = "Ген.л-т"
+
+[mo10]
+nominative = "Ген."
+
+[mo10c]
+nominative = "Зам.к-т КМП"
+
+[mo10s]
+nominative = "К-т КМП"
+
+[syn_k9]
+nominative = "В/л-т, боевой санитар"
+
+[ne1]
+nominative = "Мат.рек."
+
+[ne2]
+nominative = "Мл.мат."
+
+[ne3]
+nominative = "Мат."
+
+[ne4]
+nominative = "П/оф-р 3 класса"
+
+[ne5]
+nominative = "П/оф-р 2 класса"
+
+[ne6]
+nominative = "П/оф-р 1 класса"
+
+[ne7]
+nominative = "Ч-П/оф-р"
+
+[ne8]
+nominative = "Ст.Ч-П/оф-р"
+
+[ne8c]
+nominative = "Г/ст.Ч-П/оф-р"
+
+[ne9]
+nominative = "М-р.Ч-П/оф-р"
+
+[ne9c]
+nominative = "Г/м-р.Ч-П/оф-р"
+
+[no1]
+nominative = "Э-н"
+
+[no2]
+nominative = "Мл.л-т"
+
+[no3]
+nominative = "Л-т"
+
+[no4]
+nominative = "Л-т.кмдр."
+
+[no5]
+nominative = "Кмдр."
+
+[no6]
+nominative = "К-н"
+
+[no6e]
+nominative = "Км-р"
+
+[no6c]
+nominative = "Ст.Км-р"
+
+[no7]
+nominative = "К-адм. мл.ранга"
+
+[no8]
+nominative = "К-адм. ст.ранга"
+
+[no9]
+nominative = "В-адм."
+
+[no10]
+nominative = "Адм."
+
+[no10c]
+nominative = "Нач.ВМО"
+
+[pva]
+nominative = "Сов."
+
+[pvi]
+nominative = "Ин-р"
+
+[pvci]
+nominative = "Ин-р оф-р"
+
+[pvdm]
+nominative = "М-л/нам."
+
+[pvm]
+nominative = "М-л"
+
+[pvsm]
+nominative = "С/м-л"
+
+[pvcm]
+nominative = "Нач.м-л"

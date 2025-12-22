@@ -1,0 +1,134 @@
+[observer]
+nominative = "Наблюдатель"
+genitive = "Наблюдателя"
+dative = "Наблюдателю"
+accusative = "Наблюдателя"
+instrumental = "Наблюдателем"
+prepositional = "Наблюдателе"
+gender = "male"
+
+[gardener]
+nominative = "Садовник"
+genitive = "Садовника"
+dative = "Садовнику"
+accusative = "Садовника"
+instrumental = "Садовником"
+prepositional = "Садовнике"
+gender = "male"
+
+[healer]
+nominative = "Лекарь"
+genitive = "Лекаря"
+dative = "Лекарю"
+accusative = "Лекаря"
+instrumental = "Лекарем"
+prepositional = "Лекаре"
+gender = "male"
+
+["steel crest"]
+nominative = "Стальной гребень"
+genitive = "Стального гребня"
+dative = "Стальному гребню"
+accusative = "Стальной гребень"
+instrumental = "Стальным гребнем"
+prepositional = "Стальном гребне"
+gender = "male"
+
+[eggsac]
+nominative = "Яйценос"
+genitive = "Яйценоса"
+dative = "Яйценосу"
+accusative = "Яйценоса"
+instrumental = "Яйценосом"
+prepositional = "Яйценосе"
+gender = "male"
+
+["resin whisperer"]
+nominative = "Заклинатель смолы"
+genitive = "Заклинателя смолы"
+dative = "Заклинателю смолы"
+accusative = "Заклинателя смолы"
+instrumental = "Заклинателем смолы"
+prepositional = "Заклинателе смолы"
+gender = "male"
+
+[vampire]
+nominative = "Вампир"
+genitive = "Вампира"
+dative = "Вампиру"
+accusative = "Вампира"
+instrumental = "Вампиром"
+prepositional = "Вампире"
+gender = "male"
+
+[charger]
+nominative = "Таран"
+genitive = "Тарана"
+dative = "Тарану"
+accusative = "Таран"
+instrumental = "Тараном"
+prepositional = "Таране"
+gender = "male"
+
+[dancer]
+nominative = "Танцор"
+genitive = "Танцора"
+dative = "Танцору"
+accusative = "Танцора"
+instrumental = "Танцором"
+prepositional = "Танцоре"
+gender = "male"
+
+[oppressor]
+nominative = "Угнетатель"
+genitive = "Угнетателя"
+dative = "Угнетателю"
+accusative = "Угнетателя"
+instrumental = "Угнетателем"
+prepositional = "Угнетателе"
+gender = "male"
+
+[vanguard]
+nominative = "Авангард"
+genitive = "Авангарда"
+dative = "Авангарду"
+accusative = "Авангард"
+instrumental = "Авангардом"
+prepositional = "Авангарде"
+gender = "male"
+
+[valkyrie]
+nominative = "Валькирия"
+genitive = "Валькирии"
+dative = "Валькирии"
+accusative = "Валькирию"
+instrumental = "Валькирией"
+prepositional = "Валькирии"
+gender = "female"
+
+[trapper]
+nominative = "Ловчий"
+genitive = "Ловчего"
+dative = "Ловчему"
+accusative = "Ловчего"
+instrumental = "Ловчим"
+prepositional = "Ловчем"
+gender = "male"
+
+[berserker]
+nominative = "Берсерк"
+genitive = "Берсерка"
+dative = "Берсерку"
+accusative = "Берсерка"
+instrumental = "Берсерком"
+prepositional = "Берсерке"
+gender = "male"
+
+[hedgehog]
+nominative = "Дикобраз"
+genitive = "Дикобраза"
+dative = "Дикобразу"
+accusative = "Дикобраза"
+instrumental = "Дикобразом"
+prepositional = "Дикобразе"
+gender = "male"
