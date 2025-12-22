@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import EditModal from "./EditModal";
+import AddModal from "./AddModal";
 import { TranslationEntry } from "./types";
 
 function App() {
@@ -9,10 +10,10 @@ function App() {
 	const [editingEntry, setEditingEntry] = useState<TranslationEntry | null>(
 		null
 	);
+	const [showAddModal, setShowAddModal] = useState<boolean>(false); // <<< Новое состояние
 
 	const fetchEntries = async () => {
 		try {
-			// ✅ Используем полный URL
 			const res = await axios.get<{ entries: TranslationEntry[] }>(
 				"http://localhost:8000/entries"
 			);
@@ -39,6 +40,20 @@ function App() {
 		}
 	};
 
+	// <<< Новая функция для добавления >>>
+	const handleAdd = async (newEntry: Omit<TranslationEntry, "status">) => {
+		try {
+			await axios.put(
+				`http://localhost:8000/entries/${newEntry.key}`,
+				newEntry
+			);
+			setShowAddModal(false);
+			fetchEntries(); // Обновляем список
+		} catch (err) {
+			console.error(err);
+		}
+	};
+
 	const filteredEntries = entries.filter(
 		(e) =>
 			e.key.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -54,11 +69,16 @@ function App() {
 				value={searchTerm}
 				onChange={(e) => setSearchTerm(e.target.value)}
 			/>
+			<button onClick={() => setShowAddModal(true)}>
+				Добавить перевод
+			</button>{" "}
+			{/* <<< Кнопка добавления */}
 			<table>
 				<thead>
 					<tr>
 						<th>Слово</th>
 						<th>Название</th>
+						<th>Источник</th>
 						<th>Статус</th>
 						<th>Действие</th>
 					</tr>
@@ -68,6 +88,7 @@ function App() {
 						<tr key={entry.key}>
 							<td>{entry.key}</td>
 							<td>{entry.nominative}</td>
+							<td>{entry.source}</td>
 							<td>
 								{entry.status === true
 									? "✅"
@@ -84,12 +105,17 @@ function App() {
 					))}
 				</tbody>
 			</table>
-
 			{editingEntry && (
 				<EditModal
 					entry={editingEntry}
 					onSave={handleSave}
 					onClose={() => setEditingEntry(null)}
+				/>
+			)}
+			{showAddModal && (
+				<AddModal
+					onSave={handleAdd}
+					onClose={() => setShowAddModal(false)}
 				/>
 			)}
 		</div>
