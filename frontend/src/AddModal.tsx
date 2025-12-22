@@ -6,9 +6,10 @@ const VALID_GENDERS = ["male", "female", "neuter", "plural"] as const;
 interface AddModalProps {
 	onSave: (newEntry: Omit<TranslationEntry, "status">) => Promise<void>;
 	onClose: () => void;
+	existingKeys: Set<string>; // <<< Передаём список существующих ключей
 }
 
-function AddModal({ onSave, onClose }: AddModalProps) {
+function AddModal({ onSave, onClose, existingKeys }: AddModalProps) {
 	const [key, setKey] = useState<string>("");
 	const [tomlText, setTomlText] = useState<string>(`nominative = ""
 genitive = ""
@@ -43,6 +44,12 @@ gender = "male"`);
 			setError(
 				"Ключ должен состоять только из латинских букв в нижнем регистре, цифр и подчёркиваний"
 			);
+			return;
+		}
+
+		// <<< Проверка: ключ не должен дублироваться >>>
+		if (existingKeys.has(key)) {
+			setError("Ключ уже существует, дубликаты запрещены");
 			return;
 		}
 

@@ -10,7 +10,7 @@ function App() {
 	const [editingEntry, setEditingEntry] = useState<TranslationEntry | null>(
 		null
 	);
-	const [showAddModal, setShowAddModal] = useState<boolean>(false); // <<< Новое состояние
+	const [showAddModal, setShowAddModal] = useState<boolean>(false);
 
 	const fetchEntries = async () => {
 		try {
@@ -40,7 +40,6 @@ function App() {
 		}
 	};
 
-	// <<< Новая функция для добавления >>>
 	const handleAdd = async (newEntry: Omit<TranslationEntry, "status">) => {
 		try {
 			await axios.put(
@@ -53,6 +52,9 @@ function App() {
 			console.error(err);
 		}
 	};
+
+	// <<< Создаём Set из всех существующих ключей >>>
+	const existingKeys = new Set(entries.map((e) => e.key));
 
 	const filteredEntries = entries.filter(
 		(e) =>
@@ -71,8 +73,7 @@ function App() {
 			/>
 			<button onClick={() => setShowAddModal(true)}>
 				Добавить перевод
-			</button>{" "}
-			{/* <<< Кнопка добавления */}
+			</button>
 			<table>
 				<thead>
 					<tr>
@@ -105,6 +106,7 @@ function App() {
 					))}
 				</tbody>
 			</table>
+
 			{editingEntry && (
 				<EditModal
 					entry={editingEntry}
@@ -112,10 +114,12 @@ function App() {
 					onClose={() => setEditingEntry(null)}
 				/>
 			)}
+
 			{showAddModal && (
 				<AddModal
 					onSave={handleAdd}
 					onClose={() => setShowAddModal(false)}
+					existingKeys={existingKeys} // <<< Передаём список ключей
 				/>
 			)}
 		</div>
