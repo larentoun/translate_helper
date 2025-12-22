@@ -3,11 +3,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List
 import os
-from utils import scan_translations, save_translation_entry
+from utils import scan_all_translations, save_translation_entry
 
 app = FastAPI()
 
-# <<< Настройка CORS >>>
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:5173"],
@@ -20,6 +19,7 @@ TRANSLATIONS_DIR = "./translations"
 
 class Entry(BaseModel):
     key: str
+    language: str  # <<< Добавим поле языка
     nominative: str
     genitive: str
     dative: str
@@ -30,14 +30,12 @@ class Entry(BaseModel):
 
 @app.get("/entries")
 def get_entries():
-    file_path = os.path.join(TRANSLATIONS_DIR, "ru.toml")  # <<< Убедитесь в имени файла
-    if not os.path.exists(file_path):
-        raise HTTPException(status_code=404, detail="File not found")
-    entries = scan_translations(file_path)
+    entries = scan_all_translations(TRANSLATIONS_DIR)
     return {"entries": entries}
 
 @app.put("/entries/{entry_key}")
 def update_entry(entry_key: str, entry: Entry):
-    file_path = os.path.join(TRANSLATIONS_DIR, "ru.toml")
+    # entry.language указывает, в какой файл сохранять
+    file_path = os.path.join(TRANSLATIONS_DIR, f"{entry.language}.toml")
     save_translation_entry(file_path, entry_key, entry.dict())
     return {"status": "success"}

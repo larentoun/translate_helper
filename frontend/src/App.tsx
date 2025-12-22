@@ -68,7 +68,13 @@ function App() {
 						<tr key={entry.key}>
 							<td>{entry.key}</td>
 							<td>{entry.nominative}</td>
-							<td>{entry.status ? "✅" : "❌"}</td>
+							<td>
+								{entry.status === true
+									? "✅"
+									: entry.status === "конфликт"
+									? "⚠️ Конфликт"
+									: "❌"}
+							</td>
 							<td>
 								<button onClick={() => setEditingEntry(entry)}>
 									Редактировать

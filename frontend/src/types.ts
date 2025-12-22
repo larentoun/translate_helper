@@ -1,5 +1,6 @@
 export interface TranslationEntry {
 	key: string;
+	language: string;
 	nominative: string;
 	genitive: string;
 	dative: string;
@@ -7,5 +8,5 @@ export interface TranslationEntry {
 	instrumental: string;
 	prepositional: string;
 	gender: string;
-	status: boolean;
+	status: boolean | "конфликт";
 }
