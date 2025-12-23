@@ -30,7 +30,6 @@ gender = "${entry.gender}"`;
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 
-		// <<< Разбор TOML-блока >>>
 		const lines = tomlText
 			.split("\n")
 			.map((line) => line.trim())
