@@ -23978,7 +23978,7 @@ gender = "female"
 
 [poly]
 nominative = "Поли"
-tags = ["nominative_only"]
+tags = [ "nominative_only",]
 
 ["the ghost of poly"]
 nominative = "призрак Поли"
