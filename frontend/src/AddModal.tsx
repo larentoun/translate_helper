@@ -97,28 +97,25 @@ tags = []`);
 				}
 				newEntry[fieldName] = fieldValue as any;
 			} else if (field === "tags") {
-				// Обработка тегов: разбор массива из строки вида [tag1, tag2, tag3]
 				const tagsValue = value.trim();
 				if (tagsValue.startsWith("[") && tagsValue.endsWith("]")) {
 					const tagsContent = tagsValue
 						.substring(1, tagsValue.length - 1)
 						.trim();
 					if (tagsContent) {
-						// Разбираем теги, учитывая, что они могут быть в кавычках
 						const tagList = tagsContent
 							.split(",")
 							.map((tag) => tag.trim())
-							.map((tag) => tag.replace(/"/g, "")) // Убираем кавычки
-							.filter((tag) => tag); // Убираем пустые строки
+							.map((tag) => tag.replace(/"/g, ""))
+							.filter((tag) => tag);
 						newEntry.tags = tagList;
 					} else {
-						newEntry.tags = []; // Если внутри пусто, устанавливаем пустой массив
+						newEntry.tags = [];
 					}
 				}
 			}
 		}
 
-		// Проверим, что все обязательные поля заполнены
 		const requiredFields = [
 			"nominative",
 			"genitive",
