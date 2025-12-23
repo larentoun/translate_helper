@@ -616,13 +616,13 @@ instrumental = "набором для ремонта оружия"
 prepositional = "наборе для ремонта оружия"
 gender = "male"
 
-["multi-purpose combat lubricant"]
-nominative = "универсальная оружейная смазка"
-genitive = "универсальной оружейной смазки"
-dative = "универсальной оружейной смазке"
-accusative = "универсальную оружейную смазку"
-instrumental = "универсальной оружейной смазкой"
-prepositional = "универсальной оружейной смазке"
+["gun oil"]
+nominative = "оружейная смазка"
+genitive = " оружейной смазки"
+dative = "оружейной смазке"
+accusative = "оружейную смазку"
+instrumental = "оружейной смазкой"
+prepositional = "оружейной смазке"
 gender = "female"
 
 ["combat flashlight"]

@@ -155,7 +155,7 @@ gender = "male"
 nominative = "подсумок для инжекторов (полный)"
 tags = ["nominative_only", "cm13"]
 
-["auto-injector pouch"]
+["autoinjector pouch"]
 nominative = "подсумок для инжекторов"
 genitive = "подсумка для инжекторов"
 dative = "подсумку для инжекторов"

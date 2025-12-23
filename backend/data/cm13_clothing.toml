@@ -325,13 +325,13 @@ instrumental = "сумкой ККМП для гранат"
 prepositional = "сумке ККМП для гранат"
 gender = "female"
 
-["l44 m37a2 scabbard"]
-nominative = "чехол L44 для дробовика M37A2"
-genitive = "чехла L44 для дробовика M37A2"
-dative = "чехлу L44 для дробовика M37A2"
-accusative = "чехол L44 для дробовика M37A2"
-instrumental = "чехлом L44 для дробовика M37A2"
-prepositional = "чехле L44 для дробовика M37A2"
+["l44 shotgun scabbard"]
+nominative = "чехол L44 для дробовика"
+genitive = "чехла L44 для дробовика"
+dative = "чехлу L44 для дробовика"
+accusative = "чехол L44 для дробовика"
+instrumental = "чехлом L44 для дробовика"
+prepositional = "чехле L44 для дробовика"
 gender = "male"
 
 ["machete scabbard (full)"]
