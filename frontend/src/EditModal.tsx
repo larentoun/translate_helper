@@ -36,10 +36,13 @@ gender = "${entry.gender}"`;
 		setError(null);
 	};
 
-	const handleAddTag = () => {
-		if (newTag.trim() && !selectedTags.includes(newTag.trim())) {
-			setSelectedTags([...selectedTags, newTag.trim()]);
+	const handleChangeTagSelect = (e: ChangeEvent<HTMLSelectElement>) => {
+		const tag = e.target.value;
+		if (tag && !selectedTags.includes(tag)) {
+			setSelectedTags([...selectedTags, tag]);
 			setNewTag("");
+		} else {
+			setNewTag(tag);
 		}
 	};
 
@@ -160,7 +163,7 @@ gender = "${entry.gender}"`;
 				>
 					<select
 						value={newTag}
-						onChange={(e) => setNewTag(e.target.value)}
+						onChange={handleChangeTagSelect}
 						style={{ flex: 1 }}
 					>
 						<option value="">Выберите тег</option>
@@ -173,13 +176,6 @@ gender = "${entry.gender}"`;
 								)
 						)}
 					</select>
-					<button
-						type="button"
-						onClick={handleAddTag}
-						disabled={!newTag.trim()}
-					>
-						Добавить
-					</button>
 				</div>
 				<div style={{ display: "flex", flexWrap: "wrap", gap: "5px" }}>
 					{selectedTags.map((tag) => (
