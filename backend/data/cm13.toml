@@ -6,7 +6,6 @@ accusative = "игровой автомат «Чёрный Донован II: Д
 instrumental = "игровым автоматом «Чёрный Донован II: Двойная месть»"
 prepositional = "игровом автомате «Чёрный Донован II: Двойная месть»"
 gender = "male"
-tags = [ "test1", "test2",]
 
 ["piece of shrapnel"]
 nominative = "осколок"
@@ -16,7 +15,6 @@ accusative = "осколок"
 instrumental = "осколком"
 prepositional = "осколке"
 gender = "male"
-tags = [ "test", "test2",]
 
 [rat]
 nominative = "крыса"
