@@ -17,7 +17,8 @@ dative = "${entry.dative}"
 accusative = "${entry.accusative}"
 instrumental = "${entry.instrumental}"
 prepositional = "${entry.prepositional}"
-gender = "${entry.gender}"`;
+gender = "${entry.gender}"
+tags = [${entry.tags ? entry.tags.map((tag) => `"${tag}"`).join(", ") : ""}]`;
 
 	const [tomlText, setTomlText] = useState<string>(initialTomlValue);
 	const [error, setError] = useState<string | null>(null);
@@ -68,6 +69,25 @@ gender = "${entry.gender}"`;
 					return;
 				}
 				newEntry[fieldName] = fieldValue as any;
+			} else if (key === "tags") {
+				// Обработка тегов: разбор массива из строки вида [tag1, tag2, tag3]
+				const tagsValue = value.trim();
+				if (tagsValue.startsWith("[") && tagsValue.endsWith("]")) {
+					const tagsContent = tagsValue
+						.substring(1, tagsValue.length - 1)
+						.trim();
+					if (tagsContent) {
+						// Разбираем теги, учитывая, что они могут быть в кавычках
+						const tagList = tagsContent
+							.split(",")
+							.map((tag) => tag.trim())
+							.map((tag) => tag.replace(/"/g, "")) // Убираем кавычки
+							.filter((tag) => tag); // Убираем пустые строки
+						newEntry.tags = tagList;
+					} else {
+						newEntry.tags = []; // Если внутри пусто, устанавливаем пустой массив
+					}
+				}
 			}
 		}
 

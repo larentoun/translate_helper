@@ -39,6 +39,7 @@ def scan_all_translations(translations_dir: str):
                 "instrumental": value.get("instrumental", ""),
                 "prepositional": value.get("prepositional", ""),
                 "gender": value.get("gender", ""),
+                "tags": value.get("tags", []),
             }
             entry["status"] = all(entry.get(f) for f in REQUIRED_FIELDS)
             all_entries_raw.append(entry)
@@ -90,6 +91,9 @@ def save_translation_entry(filepath: str, entry_key: str, new_data: dict):
     for field in ["nominative", "genitive", "dative", "accusative", "instrumental", "prepositional", "gender"]:
         if field in new_data:
             data[entry_key][field] = new_data[field]
+
+    if "tags" in new_data:
+        data[entry_key]["tags"] = new_data["tags"]
 
     with open(filepath, "w", encoding="utf-8") as f:
         toml.dump(data, f)

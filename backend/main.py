@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import os
 from utils import scan_all_translations, save_translation_entry, parse_toml_file, check_and_fix_lowercase_keys
+from typing import List, Optional
 
 app = FastAPI()
 
@@ -26,6 +27,7 @@ class Entry(BaseModel):
     instrumental: str
     prepositional: str
     gender: str
+    tags: Optional[List[str]] = []
 
 @app.get("/entries")
 def get_entries():
@@ -68,6 +70,7 @@ def upload_file(file: UploadFile = File(...)):
             "instrumental": data.get("instrumental", ""),
             "prepositional": data.get("prepositional", ""),
             "gender": data.get("gender", ""),
+            "tags": data.get("tags", []),
         }
 
         required_fields = ["nominative", "genitive", "dative", "accusative", "instrumental", "prepositional", "gender"]

@@ -9,4 +9,5 @@ export interface TranslationEntry {
 	prepositional: string;
 	gender: string;
 	status: string;
+	tags?: string[];
 }
