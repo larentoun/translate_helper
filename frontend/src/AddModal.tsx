@@ -1,12 +1,12 @@
 import React, { useState, ChangeEvent } from "react";
-import { TranslationEntry } from "./types";
+import { TranslationEntry, VALID_TAGS } from "./types";
 
 const VALID_GENDERS = ["male", "female", "neuter", "plural"] as const;
 
 interface AddModalProps {
 	onSave: (newEntry: Omit<TranslationEntry, "status">) => Promise<void>;
 	onClose: () => void;
-	existingKeys: Set<string>; // <<< Передаём список существующих ключей
+	existingKeys: Set<string>;
 }
 
 function AddModal({ onSave, onClose, existingKeys }: AddModalProps) {
@@ -17,8 +17,9 @@ dative = ""
 accusative = ""
 instrumental = ""
 prepositional = ""
-gender = "male"
-tags = []`);
+gender = "male"`);
+	const [selectedTags, setSelectedTags] = useState<string[]>([]);
+	const [newTag, setNewTag] = useState<string>("");
 	const [error, setError] = useState<string | null>(null);
 
 	const handleChangeKey = (e: ChangeEvent<HTMLInputElement>) => {
@@ -32,6 +33,17 @@ tags = []`);
 		setError(null);
 	};
 
+	const handleAddTag = () => {
+		if (newTag.trim() && !selectedTags.includes(newTag.trim())) {
+			setSelectedTags([...selectedTags, newTag.trim()]);
+			setNewTag("");
+		}
+	};
+
+	const handleRemoveTag = (tag: string) => {
+		setSelectedTags(selectedTags.filter((t) => t !== tag));
+	};
+
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 
@@ -40,7 +52,6 @@ tags = []`);
 			return;
 		}
 
-		// <<< Проверка: ключ должен быть в нижнем регистре, латиница, цифры, подчёркивания >>>
 		if (!/^[a-z0-9_]+$/.test(key)) {
 			setError(
 				"Ключ должен состоять только из латинских букв в нижнем регистре, цифр и подчёркиваний"
@@ -48,13 +59,11 @@ tags = []`);
 			return;
 		}
 
-		// <<< Проверка: ключ не должен дублироваться >>>
 		if (existingKeys.has(key)) {
 			setError("Ключ уже существует, дубликаты запрещены");
 			return;
 		}
 
-		// <<< Разбор TOML-блока >>>
 		const lines = tomlText
 			.split("\n")
 			.map((line) => line.trim())
@@ -62,11 +71,12 @@ tags = []`);
 
 		let newEntry: Partial<Omit<TranslationEntry, "status">> = {
 			key: key.trim(),
-			source: "unsorted", // <<< По умолчанию сохраняем в unsorted.toml
+			source: "unsorted",
+			tags: selectedTags,
 		};
 
 		for (const line of lines) {
-			if (line.startsWith("[") && line.endsWith("]")) continue; // Пропускаем [key]
+			if (line.startsWith("[") && line.endsWith("]")) continue;
 
 			const [field, value] = line.split("=").map((s) => s.trim());
 			if (!field || !value) continue;
@@ -96,23 +106,6 @@ tags = []`);
 					return;
 				}
 				newEntry[fieldName] = fieldValue as any;
-			} else if (field === "tags") {
-				const tagsValue = value.trim();
-				if (tagsValue.startsWith("[") && tagsValue.endsWith("]")) {
-					const tagsContent = tagsValue
-						.substring(1, tagsValue.length - 1)
-						.trim();
-					if (tagsContent) {
-						const tagList = tagsContent
-							.split(",")
-							.map((tag) => tag.trim())
-							.map((tag) => tag.replace(/"/g, ""))
-							.filter((tag) => tag);
-						newEntry.tags = tagList;
-					} else {
-						newEntry.tags = [];
-					}
-				}
 			}
 		}
 
@@ -177,6 +170,69 @@ tags = []`);
 					onChange={handleChangeToml}
 					style={{ fontFamily: "monospace", fontSize: "12px" }}
 				/>
+				<br />
+				<label>Теги:</label>
+				<br />
+				<div
+					style={{
+						display: "flex",
+						gap: "10px",
+						marginBottom: "10px",
+					}}
+				>
+					<select
+						value={newTag}
+						onChange={(e) => setNewTag(e.target.value)}
+						style={{ flex: 1 }}
+					>
+						<option value="">Выберите тег</option>
+						{VALID_TAGS.map(
+							(tag) =>
+								!selectedTags.includes(tag) && (
+									<option key={tag} value={tag}>
+										{tag}
+									</option>
+								)
+						)}
+					</select>
+					<button
+						type="button"
+						onClick={handleAddTag}
+						disabled={!newTag.trim()}
+					>
+						Добавить
+					</button>
+				</div>
+				<div style={{ display: "flex", flexWrap: "wrap", gap: "5px" }}>
+					{selectedTags.map((tag) => (
+						<span
+							key={tag}
+							style={{
+								background: "#e0e0e0",
+								padding: "2px 6px",
+								borderRadius: "4px",
+								display: "flex",
+								alignItems: "center",
+							}}
+						>
+							{tag}
+							<button
+								type="button"
+								onClick={() => handleRemoveTag(tag)}
+								style={{
+									background: "none",
+									border: "none",
+									marginLeft: "5px",
+									cursor: "pointer",
+									color: "red",
+									fontSize: "12px",
+								}}
+							>
+								×
+							</button>
+						</span>
+					))}
+				</div>
 				{error && <p style={{ color: "red" }}>{error}</p>}
 				<br />
 				<button type="submit">Сохранить</button>

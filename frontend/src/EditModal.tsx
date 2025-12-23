@@ -1,5 +1,5 @@
 import React, { useState, ChangeEvent } from "react";
-import { TranslationEntry } from "./types";
+import { TranslationEntry, VALID_TAGS } from "./types";
 
 const VALID_GENDERS = ["male", "female", "neuter", "plural"] as const;
 
@@ -17,15 +17,29 @@ dative = "${entry.dative}"
 accusative = "${entry.accusative}"
 instrumental = "${entry.instrumental}"
 prepositional = "${entry.prepositional}"
-gender = "${entry.gender}"
-tags = [${entry.tags ? entry.tags.map((tag) => `"${tag}"`).join(", ") : ""}]`;
+gender = "${entry.gender}"`;
 
 	const [tomlText, setTomlText] = useState<string>(initialTomlValue);
+	const [selectedTags, setSelectedTags] = useState<string[]>(
+		entry.tags || []
+	);
+	const [newTag, setNewTag] = useState<string>("");
 	const [error, setError] = useState<string | null>(null);
 
 	const handleChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
 		setTomlText(e.target.value);
 		setError(null);
+	};
+
+	const handleAddTag = () => {
+		if (newTag.trim() && !selectedTags.includes(newTag.trim())) {
+			setSelectedTags([...selectedTags, newTag.trim()]);
+			setNewTag("");
+		}
+	};
+
+	const handleRemoveTag = (tag: string) => {
+		setSelectedTags(selectedTags.filter((t) => t !== tag));
 	};
 
 	const handleSubmit = async (e: React.FormEvent) => {
@@ -69,25 +83,10 @@ tags = [${entry.tags ? entry.tags.map((tag) => `"${tag}"`).join(", ") : ""}]`;
 					return;
 				}
 				newEntry[fieldName] = fieldValue as any;
-			} else if (key === "tags") {
-				const tagsValue = value.trim();
-				if (tagsValue.startsWith("[") && tagsValue.endsWith("]")) {
-					const tagsContent = tagsValue
-						.substring(1, tagsValue.length - 1)
-						.trim();
-					if (tagsContent) {
-						const tagList = tagsContent
-							.split(",")
-							.map((tag) => tag.trim())
-							.map((tag) => tag.replace(/"/g, ""))
-							.filter((tag) => tag);
-						newEntry.tags = tagList;
-					} else {
-						newEntry.tags = [];
-					}
-				}
 			}
 		}
+
+		newEntry.tags = selectedTags;
 
 		newEntry = {
 			...entry,
@@ -132,6 +131,69 @@ tags = [${entry.tags ? entry.tags.map((tag) => `"${tag}"`).join(", ") : ""}]`;
 					onChange={handleChange}
 					style={{ fontFamily: "monospace", fontSize: "12px" }}
 				/>
+				<br />
+				<label>Теги:</label>
+				<br />
+				<div
+					style={{
+						display: "flex",
+						gap: "10px",
+						marginBottom: "10px",
+					}}
+				>
+					<select
+						value={newTag}
+						onChange={(e) => setNewTag(e.target.value)}
+						style={{ flex: 1 }}
+					>
+						<option value="">Выберите тег</option>
+						{VALID_TAGS.map(
+							(tag) =>
+								!selectedTags.includes(tag) && (
+									<option key={tag} value={tag}>
+										{tag}
+									</option>
+								)
+						)}
+					</select>
+					<button
+						type="button"
+						onClick={handleAddTag}
+						disabled={!newTag.trim()}
+					>
+						Добавить
+					</button>
+				</div>
+				<div style={{ display: "flex", flexWrap: "wrap", gap: "5px" }}>
+					{selectedTags.map((tag) => (
+						<span
+							key={tag}
+							style={{
+								background: "#e0e0e0",
+								padding: "2px 6px",
+								borderRadius: "4px",
+								display: "flex",
+								alignItems: "center",
+							}}
+						>
+							{tag}
+							<button
+								type="button"
+								onClick={() => handleRemoveTag(tag)}
+								style={{
+									background: "none",
+									border: "none",
+									marginLeft: "5px",
+									cursor: "pointer",
+									color: "red",
+									fontSize: "12px",
+								}}
+							>
+								×
+							</button>
+						</span>
+					))}
+				</div>
 				{error && <p style={{ color: "red" }}>{error}</p>}
 				<br />
 				<button type="submit">Сохранить</button>

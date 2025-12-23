@@ -1,0 +1,18 @@
+[123]
+nominative = "1"
+genitive = "2"
+dative = "3"
+accusative = "4"
+instrumental = "5"
+prepositional = "6"
+gender = "male"
+
+[123123]
+nominative = "1"
+genitive = "2"
+dative = "3"
+accusative = "4"
+instrumental = "5"
+prepositional = "6"
+gender = "male"
+tags = [ "cm13",]

@@ -11,3 +11,7 @@ export interface TranslationEntry {
 	status: string;
 	tags?: string[];
 }
+
+export const VALID_TAGS = ["cm13", "ss13"] as const;
+
+export type ValidTag = (typeof VALID_TAGS)[number];

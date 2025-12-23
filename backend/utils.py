@@ -93,7 +93,11 @@ def save_translation_entry(filepath: str, entry_key: str, new_data: dict):
             data[entry_key][field] = new_data[field]
 
     if "tags" in new_data:
-        data[entry_key]["tags"] = new_data["tags"]
+        tags = new_data["tags"]
+        if tags:
+            data[entry_key]["tags"] = tags
+        else:
+            data[entry_key].pop("tags", None)
 
     with open(filepath, "w", encoding="utf-8") as f:
         toml.dump(data, f)
