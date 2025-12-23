@@ -17,8 +17,8 @@ function App() {
 	const [showLowercaseModal, setShowLowercaseModal] =
 		useState<boolean>(false);
 
-	const [statusFilter, setStatusFilter] = useState<string>("all");
-	const [tagFilter, setTagFilter] = useState<string>("all");
+	const [statusFilter, setStatusFilter] = useState<string>("all"); // "all", "good", "incomplete", "conflict"
+	const [selectedTags, setSelectedTags] = useState<string[]>([]); // <<< Теперь массив
 
 	const fetchEntries = async () => {
 		try {
@@ -94,14 +94,14 @@ function App() {
 			? entries
 			: entries.filter((entry) => entry.status === statusFilter);
 
-	const filteredByTag =
-		tagFilter === "all"
-			? filteredByStatus
-			: filteredByStatus.filter(
-					(entry) => entry.tags && entry.tags.includes(tagFilter)
-			  );
+	const filteredByTags =
+		selectedTags.length > 0
+			? filteredByStatus.filter((entry) =>
+					selectedTags.some((tag) => entry.tags?.includes(tag))
+			  )
+			: filteredByStatus;
 
-	const filteredEntries = filteredByTag.filter(
+	const filteredEntries = filteredByTags.filter(
 		(e) =>
 			e.key.toLowerCase().includes(searchTerm.toLowerCase()) ||
 			e.nominative.toLowerCase().includes(searchTerm.toLowerCase())
@@ -110,6 +110,12 @@ function App() {
 	const allTags = Array.from(
 		new Set(entries.flatMap((entry) => entry.tags || []))
 	).sort();
+
+	const toggleTag = (tag: string) => {
+		setSelectedTags((prev) =>
+			prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
+		);
+	};
 
 	return (
 		<div>
@@ -127,7 +133,7 @@ function App() {
 					placeholder="Поиск по словам..."
 					value={searchTerm}
 					onChange={(e) => setSearchTerm(e.target.value)}
-					style={{ flex: 1, minWidth: "200px" }}
+					style={{ flex: 1, minWidth: "200px", maxWidth: "200px" }}
 				/>
 				<select
 					value={statusFilter}
@@ -139,18 +145,62 @@ function App() {
 					<option value="incomplete">Неполные</option>
 					<option value="conflict">Конфликты</option>
 				</select>
-				<select
-					value={tagFilter}
-					onChange={(e) => setTagFilter(e.target.value)}
-					style={{ minWidth: "120px" }}
-				>
-					<option value="all">Все теги</option>
-					{allTags.map((tag) => (
-						<option key={tag} value={tag}>
-							{tag}
-						</option>
-					))}
-				</select>
+				<div style={{ position: "relative", minWidth: "120px" }}>
+					<button
+						type="button"
+						style={{
+							width: "100%",
+							textAlign: "left",
+							padding: "4px 8px",
+							border: "1px solid #ccc",
+							background: "white",
+						}}
+						onClick={() => {
+							const dropdown =
+								document.getElementById("tag-dropdown");
+							if (dropdown) {
+								dropdown.style.display =
+									dropdown.style.display === "block"
+										? "none"
+										: "block";
+							}
+						}}
+					>
+						{selectedTags.length > 0
+							? `Теги: ${selectedTags.length}`
+							: "Все теги"}
+					</button>
+					<div
+						id="tag-dropdown"
+						style={{
+							position: "absolute",
+							top: "100%",
+							left: 0,
+							right: 0,
+							background: "white",
+							border: "1px solid #ccc",
+							zIndex: 10,
+							display: "none",
+							maxHeight: "200px",
+							overflowY: "auto",
+							minWidth: "200px",
+						}}
+					>
+						{allTags.map((tag) => (
+							<div key={tag} style={{ padding: "4px 8px" }}>
+								<label>
+									<input
+										type="checkbox"
+										checked={selectedTags.includes(tag)}
+										onChange={() => toggleTag(tag)}
+									/>
+									{tag}
+								</label>
+							</div>
+						))}
+					</div>
+				</div>
+				<div>Всего значений: {filteredEntries.length}</div>
 			</div>
 			<div style={{ marginBottom: "10px" }}>
 				<button onClick={() => setShowAddModal(true)}>
@@ -205,6 +255,7 @@ function App() {
 								style={{
 									border: "1px solid #ddd",
 									padding: "8px",
+									maxWidth: "300px",
 								}}
 							>
 								{entry.key}
@@ -213,6 +264,7 @@ function App() {
 								style={{
 									border: "1px solid #ddd",
 									padding: "8px",
+									maxWidth: "300px",
 								}}
 							>
 								{entry.nominative}
