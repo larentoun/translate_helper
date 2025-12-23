@@ -13,6 +13,11 @@ interface TagFilter {
 	mode: TagFilterMode;
 }
 
+interface SourceFilter {
+	source: string;
+	mode: TagFilterMode;
+}
+
 function App() {
 	const [entries, setEntries] = useState<TranslationEntry[]>([]);
 	const [searchTerm, setSearchTerm] = useState<string>("");
@@ -26,6 +31,7 @@ function App() {
 
 	const [statusFilter, setStatusFilter] = useState<string>("all");
 	const [tagFilters, setTagFilters] = useState<TagFilter[]>([]);
+	const [sourceFilters, setSourceFilters] = useState<SourceFilter[]>([]);
 
 	const fetchEntries = async () => {
 		try {
@@ -101,7 +107,29 @@ function App() {
 			? entries
 			: entries.filter((entry) => entry.status === statusFilter);
 
-	const filteredByTags = filteredByStatus.filter((entry) => {
+	const filteredBySource = filteredByStatus.filter((entry) => {
+		const excludeFilters = sourceFilters.filter(
+			(f) => f.mode === "exclude"
+		);
+		for (const filter of excludeFilters) {
+			if (entry.source === filter.source) {
+				return false;
+			}
+		}
+
+		const includeFilters = sourceFilters.filter(
+			(f) => f.mode === "include"
+		);
+		if (includeFilters.length > 0) {
+			return includeFilters.some(
+				(filter) => entry.source === filter.source
+			);
+		}
+
+		return true;
+	});
+
+	const filteredByTags = filteredBySource.filter((entry) => {
 		const excludeFilters = tagFilters.filter((f) => f.mode === "exclude");
 		for (const filter of excludeFilters) {
 			if (entry.tags?.includes(filter.tag)) {
@@ -128,6 +156,36 @@ function App() {
 	const allTags = Array.from(
 		new Set(entries.flatMap((entry) => entry.tags || []))
 	).sort();
+
+	const allSources = Array.from(
+		new Set(entries.map((entry) => entry.source))
+	).sort();
+
+	const setSourceMode = (source: string, mode: TagFilterMode) => {
+		setSourceFilters((prev) => {
+			const existing = prev.find((f) => f.source === source);
+			if (existing) {
+				if (mode === "neutral") {
+					return prev.filter((f) => f.source !== source);
+				} else {
+					return prev.map((f) =>
+						f.source === source ? { ...f, mode } : f
+					);
+				}
+			} else {
+				if (mode !== "neutral") {
+					return [...prev, { source, mode }];
+				} else {
+					return prev;
+				}
+			}
+		});
+	};
+
+	const getSourceMode = (source: string): TagFilterMode => {
+		const filter = sourceFilters.find((f) => f.source === source);
+		return filter ? filter.mode : "neutral";
+	};
 
 	const setTagMode = (tag: string, mode: TagFilterMode) => {
 		setTagFilters((prev) => {
@@ -184,6 +242,122 @@ function App() {
 					<option value="incomplete">Неполные</option>
 					<option value="conflict">Конфликты</option>
 				</select>
+				<div style={{ position: "relative", minWidth: "120px" }}>
+					<button
+						type="button"
+						style={{
+							width: "100%",
+							textAlign: "left",
+							padding: "4px 8px",
+							border: "1px solid #ccc",
+							background: "white",
+						}}
+						onClick={() => {
+							const dropdown =
+								document.getElementById("source-dropdown");
+							if (dropdown) {
+								dropdown.style.display =
+									dropdown.style.display === "block"
+										? "none"
+										: "block";
+							}
+						}}
+					>
+						{sourceFilters.length > 0
+							? `Источники: ${sourceFilters.length}`
+							: "Все источники"}
+					</button>
+					<div
+						id="source-dropdown"
+						style={{
+							position: "absolute",
+							top: "100%",
+							left: 0,
+							right: 0,
+							background: "white",
+							border: "1px solid #ccc",
+							zIndex: 10,
+							display: "none",
+							maxHeight: "200px",
+							overflowY: "auto",
+							minWidth: "200px",
+						}}
+					>
+						{allSources.map((source) => (
+							<div
+								key={source}
+								style={{
+									padding: "4px 8px",
+									display: "flex",
+									alignItems: "center",
+									gap: "5px",
+								}}
+							>
+								<span
+									style={{
+										fontSize: "12px",
+										minWidth: "100px",
+										overflow: "hidden",
+										textOverflow: "ellipsis",
+									}}
+								>
+									{source}
+								</span>
+								<button
+									type="button"
+									style={{
+										background:
+											getSourceMode(source) === "include"
+												? "#4CAF50"
+												: "#f0f0f0",
+										border: "1px solid #ccc",
+										padding: "2px 4px",
+										fontSize: "10px",
+										cursor: "pointer",
+									}}
+									onClick={() =>
+										setSourceMode(
+											source,
+											getSourceMode(source) === "include"
+												? "neutral"
+												: "include"
+										)
+									}
+								>
+									+
+								</button>
+								<button
+									type="button"
+									style={{
+										background:
+											getSourceMode(source) === "exclude"
+												? "#f44336"
+												: "#f0f0f0",
+										border: "1px solid #ccc",
+										padding: "2px 4px",
+										fontSize: "10px",
+										cursor: "pointer",
+										color:
+											getSourceMode(source) === "exclude"
+												? "white"
+												: "black",
+									}}
+									onClick={() =>
+										setSourceMode(
+											source,
+											getSourceMode(source) === "exclude"
+												? "neutral"
+												: "exclude"
+										)
+									}
+								>
+									−
+								</button>
+							</div>
+						))}
+					</div>
+				</div>
+				{/* <<< Мультиселект для тегов >>> */}
 				<div style={{ position: "relative", minWidth: "120px" }}>
 					<button
 						type="button"
