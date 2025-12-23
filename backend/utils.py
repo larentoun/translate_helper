@@ -13,6 +13,10 @@ REQUIRED_FIELDS = [
     "gender",
 ]
 
+NOMINATIVE_ONLY_FIELDS = [
+    "nominative",
+]
+
 def scan_all_translations(translations_dir: str):
     entries = []
     key_source_map = {}
@@ -41,7 +45,12 @@ def scan_all_translations(translations_dir: str):
                 "gender": value.get("gender", ""),
                 "tags": value.get("tags", []),
             }
-            entry["status"] = all(entry.get(f) for f in REQUIRED_FIELDS)
+
+            if "nominative_only" in entry["tags"] and entry["nominative"]:
+                entry["status"] = all(entry.get(f) for f in NOMINATIVE_ONLY_FIELDS)
+            else:
+                entry["status"] = all(entry.get(f) for f in REQUIRED_FIELDS)
+
             all_entries_raw.append(entry)
 
             if key not in key_source_map:

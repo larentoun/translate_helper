@@ -1,7 +1,12 @@
 import React, { useState, ChangeEvent } from "react";
-import { TranslationEntry, VALID_TAGS } from "./types";
-
-const VALID_GENDERS = ["male", "female", "neuter", "plural"] as const;
+import {
+	TranslationEntry,
+	VALID_TAGS,
+	ValidTag,
+	REQUIRED_FIELDS,
+	NOMINATIVE_ONLY_FIELDS,
+	VALID_GENDERS,
+} from "./types";
 
 interface AddModalProps {
 	onSave: (newEntry: Omit<TranslationEntry, "status">) => Promise<void>;
@@ -109,15 +114,11 @@ gender = "male"`);
 			}
 		}
 
-		const requiredFields = [
-			"nominative",
-			"genitive",
-			"dative",
-			"accusative",
-			"instrumental",
-			"prepositional",
-			"gender",
-		];
+		const hasNominativeOnlyTag = selectedTags.includes("nominative_only");
+		const requiredFields = hasNominativeOnlyTag
+			? NOMINATIVE_ONLY_FIELDS
+			: REQUIRED_FIELDS;
+
 		for (const field of requiredFields) {
 			if (
 				!(field in newEntry) ||

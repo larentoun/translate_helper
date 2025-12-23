@@ -1,7 +1,13 @@
 import React, { useState, ChangeEvent } from "react";
-import { TranslationEntry, VALID_TAGS } from "./types";
 
-const VALID_GENDERS = ["male", "female", "neuter", "plural"] as const;
+import {
+	TranslationEntry,
+	VALID_TAGS,
+	ValidTag,
+	REQUIRED_FIELDS,
+	NOMINATIVE_ONLY_FIELDS,
+	VALID_GENDERS,
+} from "./types";
 
 interface EditModalProps {
 	entry: TranslationEntry;
@@ -91,6 +97,18 @@ gender = "${entry.gender}"`;
 			...entry,
 			...newEntry,
 		};
+
+		const hasNominativeOnlyTag = selectedTags.includes("nominative_only");
+		const requiredFields = hasNominativeOnlyTag
+			? NOMINATIVE_ONLY_FIELDS
+			: REQUIRED_FIELDS;
+
+		for (const field of requiredFields) {
+			if (!newEntry[field as keyof typeof newEntry]?.toString().trim()) {
+				setError(`Поле ${field} обязательно`);
+				return;
+			}
+		}
 
 		await onSave(newEntry as TranslationEntry);
 		onClose();
