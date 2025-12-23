@@ -16,7 +16,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-TRANSLATIONS_DIR = "./translations"
+TRANSLATIONS_DIR = "./data"
 
 class Entry(BaseModel):
     key: str
