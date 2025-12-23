@@ -4,6 +4,7 @@ from pathlib import Path
 import os
 
 REQUIRED_FIELDS = [
+    "nominative",
     "genitive",
     "dative",
     "accusative",
@@ -14,12 +15,11 @@ REQUIRED_FIELDS = [
 
 def scan_all_translations(translations_dir: str):
     entries = []
-    key_source_map = {}  # ключ -> список источников (файлов)
+    key_source_map = {}
     all_entries_raw = []
 
     for file_path in Path(translations_dir).glob("*.toml"):
         source = file_path.stem
-        print(f"[DEBUG] Loading file: {file_path}")
         try:
             with open(file_path, "r", encoding="utf-8") as f:
                 content = f.read()
@@ -40,23 +40,20 @@ def scan_all_translations(translations_dir: str):
                 "prepositional": value.get("prepositional", ""),
                 "gender": value.get("gender", ""),
             }
-            # Определяем статус: если все поля есть — OK, иначе — ❌, если конфликт — "конфликт"
             entry["status"] = all(entry.get(f) for f in REQUIRED_FIELDS)
             all_entries_raw.append(entry)
 
-            # Собираем, в каких источниках встречается каждый ключ
             if key not in key_source_map:
                 key_source_map[key] = []
             key_source_map[key].append(source)
 
-    # Теперь проставляем статус "конфликт", если ключ встречается более чем в одном источнике
     for entry in all_entries_raw:
         if len(key_source_map[entry["key"]]) > 1:
-            entry["status"] = "конфликт"
+            entry["status"] = "conflict"
         elif entry["status"]:
-            entry["status"] = True  # ✅
+            entry["status"] = "good"
         else:
-            entry["status"] = False  # ❌
+            entry["status"] = "incomplete"
 
         entries.append(entry)
 
@@ -70,7 +67,6 @@ def parse_toml_file(content: str):
     """
     try:
         data = tomli.loads(content)
-        print(f"[DEBUG] Parsed data keys: {list(data.keys())}")  # <<< Отладка
         return data
     except Exception as e:
         print(f"[ERROR] Could not parse TOML content: {e}")
@@ -78,18 +74,16 @@ def parse_toml_file(content: str):
 
 
 def save_translation_entry(filepath: str, entry_key: str, new_data: dict):
-    # Убедимся, что файл существует
     if not os.path.exists(filepath):
         with open(filepath, "w", encoding="utf-8") as f:
-            pass  # Создаём пустой файл
+            pass
 
     with open(filepath, "r", encoding="utf-8") as f:
         try:
             data = toml.load(f)
         except:
-            data = {}  # Если файл пуст или сломан
+            data = {}
 
-    # Обновляем только те поля, которые есть в new_data (кроме key и source)
     if entry_key not in data:
         data[entry_key] = {}
 
@@ -97,7 +91,6 @@ def save_translation_entry(filepath: str, entry_key: str, new_data: dict):
         if field in new_data:
             data[entry_key][field] = new_data[field]
 
-    # <<< Перезаписываем файл целиком >>>
     with open(filepath, "w", encoding="utf-8") as f:
         toml.dump(data, f)
 

@@ -8,5 +8,5 @@ export interface TranslationEntry {
 	instrumental: string;
 	prepositional: string;
 	gender: string;
-	status: boolean | "конфликт";
+	status: string;
 }

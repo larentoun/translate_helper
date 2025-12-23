@@ -10,7 +10,6 @@ interface EditModalProps {
 }
 
 function EditModal({ entry, onSave, onClose }: EditModalProps) {
-	// Объединяем все поля в один TOML-блок
 	const initialTomlValue = `[${entry.key}]
 nominative = "${entry.nominative}"
 genitive = "${entry.genitive}"
@@ -25,7 +24,7 @@ gender = "${entry.gender}"`;
 
 	const handleChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
 		setTomlText(e.target.value);
-		setError(null); // Сброс ошибки при изменении
+		setError(null);
 	};
 
 	const handleSubmit = async (e: React.FormEvent) => {
@@ -40,7 +39,7 @@ gender = "${entry.gender}"`;
 		let newEntry: Partial<TranslationEntry> = { ...entry };
 
 		for (const line of lines) {
-			if (line.startsWith("[") && line.endsWith("]")) continue; // Пропускаем [key]
+			if (line.startsWith("[") && line.endsWith("]")) continue;
 
 			const [key, value] = line.split("=").map((s) => s.trim());
 			if (!key || !value) continue;
@@ -57,7 +56,6 @@ gender = "${entry.gender}"`;
 					"gender",
 				].includes(fieldName)
 			) {
-				// Убираем кавычки
 				const fieldValue = value.replace(/"/g, "");
 				if (
 					fieldName === "gender" &&
@@ -68,13 +66,12 @@ gender = "${entry.gender}"`;
 							", "
 						)}`
 					);
-					return; // Не отправляем
+					return;
 				}
 				newEntry[fieldName] = fieldValue as any;
 			}
 		}
 
-		// Восстанавливаем недостающие поля
 		newEntry = {
 			...entry,
 			...newEntry,

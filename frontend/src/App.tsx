@@ -128,10 +128,10 @@ function App() {
 							<td>{entry.nominative}</td>
 							<td>{entry.source}</td>
 							<td>
-								{entry.status === true
+								{entry.status === "good"
 									? "✅"
-									: entry.status === "конфликт"
-									? "⚠️ Конфликт"
+									: entry.status === "conflict"
+									? "⚠️"
 									: "❌"}
 							</td>
 							<td>
