@@ -357,7 +357,6 @@ function App() {
 						))}
 					</div>
 				</div>
-				{/* <<< Мультиселект для тегов >>> */}
 				<div style={{ position: "relative", minWidth: "120px" }}>
 					<button
 						type="button"
