@@ -6,6 +6,13 @@ import ImportModal from "./ImportModal";
 import LowercaseModal from "./LowercaseModal";
 import { TranslationEntry } from "./types";
 
+type TagFilterMode = "include" | "exclude" | "neutral";
+
+interface TagFilter {
+	tag: string;
+	mode: TagFilterMode;
+}
+
 function App() {
 	const [entries, setEntries] = useState<TranslationEntry[]>([]);
 	const [searchTerm, setSearchTerm] = useState<string>("");
@@ -17,8 +24,8 @@ function App() {
 	const [showLowercaseModal, setShowLowercaseModal] =
 		useState<boolean>(false);
 
-	const [statusFilter, setStatusFilter] = useState<string>("all"); // "all", "good", "incomplete", "conflict"
-	const [selectedTags, setSelectedTags] = useState<string[]>([]); // <<< Теперь массив
+	const [statusFilter, setStatusFilter] = useState<string>("all");
+	const [tagFilters, setTagFilters] = useState<TagFilter[]>([]);
 
 	const fetchEntries = async () => {
 		try {
@@ -94,12 +101,23 @@ function App() {
 			? entries
 			: entries.filter((entry) => entry.status === statusFilter);
 
-	const filteredByTags =
-		selectedTags.length > 0
-			? filteredByStatus.filter((entry) =>
-					selectedTags.some((tag) => entry.tags?.includes(tag))
-			  )
-			: filteredByStatus;
+	const filteredByTags = filteredByStatus.filter((entry) => {
+		const excludeFilters = tagFilters.filter((f) => f.mode === "exclude");
+		for (const filter of excludeFilters) {
+			if (entry.tags?.includes(filter.tag)) {
+				return false;
+			}
+		}
+
+		const includeFilters = tagFilters.filter((f) => f.mode === "include");
+		if (includeFilters.length > 0) {
+			return includeFilters.some((filter) =>
+				entry.tags?.includes(filter.tag)
+			);
+		}
+
+		return true;
+	});
 
 	const filteredEntries = filteredByTags.filter(
 		(e) =>
@@ -111,10 +129,31 @@ function App() {
 		new Set(entries.flatMap((entry) => entry.tags || []))
 	).sort();
 
-	const toggleTag = (tag: string) => {
-		setSelectedTags((prev) =>
-			prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
-		);
+	const setTagMode = (tag: string, mode: TagFilterMode) => {
+		setTagFilters((prev) => {
+			const existing = prev.find((f) => f.tag === tag);
+			if (existing) {
+				if (mode === "neutral") {
+					return prev.filter((f) => f.tag !== tag);
+				} else {
+					return prev.map((f) =>
+						f.tag === tag ? { ...f, mode } : f
+					);
+				}
+			} else {
+				if (mode !== "neutral") {
+					return [...prev, { tag, mode }];
+				} else {
+					return prev;
+				}
+			}
+		});
+	};
+
+	// <<< Функция для получения текущего режима тега >>>
+	const getTagMode = (tag: string): TagFilterMode => {
+		const filter = tagFilters.find((f) => f.tag === tag);
+		return filter ? filter.mode : "neutral";
 	};
 
 	return (
@@ -166,8 +205,8 @@ function App() {
 							}
 						}}
 					>
-						{selectedTags.length > 0
-							? `Теги: ${selectedTags.length}`
+						{tagFilters.length > 0
+							? `Теги: ${tagFilters.length}`
 							: "Все теги"}
 					</button>
 					<div
@@ -187,15 +226,75 @@ function App() {
 						}}
 					>
 						{allTags.map((tag) => (
-							<div key={tag} style={{ padding: "4px 8px" }}>
-								<label>
-									<input
-										type="checkbox"
-										checked={selectedTags.includes(tag)}
-										onChange={() => toggleTag(tag)}
-									/>
+							<div
+								key={tag}
+								style={{
+									padding: "4px 8px",
+									display: "flex",
+									alignItems: "center",
+									gap: "5px",
+								}}
+							>
+								<span
+									style={{
+										fontSize: "12px",
+										minWidth: "100px",
+										overflow: "hidden",
+										textOverflow: "ellipsis",
+									}}
+								>
 									{tag}
-								</label>
+								</span>
+								<button
+									type="button"
+									style={{
+										background:
+											getTagMode(tag) === "include"
+												? "#4CAF50"
+												: "#f0f0f0",
+										border: "1px solid #ccc",
+										padding: "2px 4px",
+										fontSize: "10px",
+										cursor: "pointer",
+									}}
+									onClick={() =>
+										setTagMode(
+											tag,
+											getTagMode(tag) === "include"
+												? "neutral"
+												: "include"
+										)
+									}
+								>
+									+
+								</button>
+								<button
+									type="button"
+									style={{
+										background:
+											getTagMode(tag) === "exclude"
+												? "#f44336"
+												: "#f0f0f0",
+										border: "1px solid #ccc",
+										padding: "2px 4px",
+										fontSize: "10px",
+										cursor: "pointer",
+										color:
+											getTagMode(tag) === "exclude"
+												? "white"
+												: "black",
+									}}
+									onClick={() =>
+										setTagMode(
+											tag,
+											getTagMode(tag) === "exclude"
+												? "neutral"
+												: "exclude"
+										)
+									}
+								>
+									−
+								</button>
 							</div>
 						))}
 					</div>
