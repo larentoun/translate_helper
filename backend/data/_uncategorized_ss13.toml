@@ -23978,12 +23978,7 @@ gender = "female"
 
 [poly]
 nominative = "Поли"
-genitive = ""
-dative = ""
-accusative = ""
-instrumental = ""
-prepositional = ""
-gender = ""
+tags = ["nominative_only"]
 
 ["the ghost of poly"]
 nominative = "призрак Поли"
