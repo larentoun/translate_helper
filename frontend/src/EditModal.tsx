@@ -10,8 +10,7 @@ interface EditModalProps {
 }
 
 function EditModal({ entry, onSave, onClose }: EditModalProps) {
-	const initialTomlValue = `[${entry.key}]
-nominative = "${entry.nominative}"
+	const initialTomlValue = `nominative = "${entry.nominative}"
 genitive = "${entry.genitive}"
 dative = "${entry.dative}"
 accusative = "${entry.accusative}"
