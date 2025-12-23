@@ -126,6 +126,7 @@ tags = [${entry.tags ? entry.tags.map((tag) => `"${tag}"`).join(", ") : ""}]`;
 					)
 				</h3>
 				<label>Введите TOML-блок:</label>
+				<br />
 				<textarea
 					rows={10}
 					cols={60}

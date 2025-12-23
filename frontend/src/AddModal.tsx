@@ -172,6 +172,7 @@ tags = []`);
 				/>
 				<br />
 				<label>TOML-блок:</label>
+				<br />
 				<textarea
 					rows={10}
 					cols={60}
